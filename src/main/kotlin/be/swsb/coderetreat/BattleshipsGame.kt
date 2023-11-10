@@ -57,10 +57,31 @@ data class BattleshipsField(val ships: List<Ship>) {
     }
 
     fun validate() {
-        val bounds = Bounds(0, 0, 9, 9)
-        if(!ships.all { it.isWithinBounds(bounds) }) {
-            throw IllegalArgumentException("Not all ships are within the bounds of the BattleshipsField")
+        if(!allShipsWithinBounds()) {
+            throw IllegalArgumentException("Ships must be placed within the bounds of the field")
         }
+        if(doShipsOverlap()) {
+            throw IllegalArgumentException("Ships may not overlap")
+        }
+        if(!allShipsOfUniqueType()) {
+            throw IllegalArgumentException("You may only place each type of ship once")
+        }
+    }
+
+    private fun allShipsWithinBounds(): Boolean {
+        val bounds = Bounds(0, 0, 9, 9)
+        return ships.all { it.isWithinBounds(bounds) }
+    }
+
+    private fun doShipsOverlap(): Boolean {
+        val amountOfUniqueLocations = ships.flatMap { it.getLocations() }.toSet().size
+        val amountOfLocations = ships.map { it.getLocations().size }.sum()
+        return amountOfUniqueLocations != amountOfLocations
+    }
+
+    private fun allShipsOfUniqueType(): Boolean {
+        val amountOfUniqueTypes = ships.map { it.type }.toSet().size
+        return amountOfUniqueTypes == ships.size
     }
 
     fun isShipAtLocation(location: Location): Boolean {

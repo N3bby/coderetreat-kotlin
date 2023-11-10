@@ -4,10 +4,10 @@ import be.swsb.coderetreat.Direction.Horizontal
 import be.swsb.coderetreat.Direction.Vertical
 import be.swsb.coderetreat.Player.Player1
 import be.swsb.coderetreat.Player.Player2
-import be.swsb.coderetreat.ShipType.Destroyer
-import org.assertj.core.api.Assertions.*
+import be.swsb.coderetreat.ShipType.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
-import java.lang.IllegalArgumentException
 
 class BattleshipsGameTest {
 
@@ -60,19 +60,39 @@ class BattleshipsGameTest {
 
         assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
             battleshipsGame.placeShip(Player1, Ship(Location(-1, 0), Horizontal, Destroyer))
-        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
+        }.withMessage("Ships must be placed within the bounds of the field")
 
         assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
             battleshipsGame.placeShip(Player1, Ship(Location(0, -1), Vertical, Destroyer))
-        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
+        }.withMessage("Ships must be placed within the bounds of the field")
 
         assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
             battleshipsGame.placeShip(Player1, Ship(Location(8, 0), Horizontal, Destroyer))
-        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
+        }.withMessage("Ships must be placed within the bounds of the field")
 
         assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
             battleshipsGame.placeShip(Player1, Ship(Location(0, 8), Vertical, Destroyer))
-        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
+        }.withMessage("Ships must be placed within the bounds of the field")
+    }
+
+    @Test
+    fun `placeShip - should throw exception if ships overlap`() {
+        val battleshipsGame = BattleshipsGame()
+        battleshipsGame.placeShip(Player1, Ship(Location(0, 2), Horizontal, Carrier))
+
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+            battleshipsGame.placeShip(Player1, Ship(Location(2, 0), Vertical, Battleship))
+        }.withMessage("Ships may not overlap")
+    }
+
+    @Test
+    fun `placeShip - should throw exception if player places the same type of ship multiple times`() {
+        val battleshipsGame = BattleshipsGame()
+        battleshipsGame.placeShip(Player1, Ship(Location(0, 0), Horizontal, Battleship))
+
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+            battleshipsGame.placeShip(Player1, Ship(Location(0, 1), Horizontal, Battleship))
+        }.withMessage("You may only place each type of ship once")
     }
 }
 
