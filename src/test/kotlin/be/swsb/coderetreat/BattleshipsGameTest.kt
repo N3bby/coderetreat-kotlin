@@ -1,11 +1,13 @@
 package be.swsb.coderetreat
 
 import be.swsb.coderetreat.Direction.Horizontal
+import be.swsb.coderetreat.Direction.Vertical
 import be.swsb.coderetreat.Player.Player1
 import be.swsb.coderetreat.Player.Player2
 import be.swsb.coderetreat.ShipType.Destroyer
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.lang.IllegalArgumentException
 
 class BattleshipsGameTest {
 
@@ -50,6 +52,27 @@ class BattleshipsGameTest {
             🌊🌊🌊🌊🌊🌊🌊🌊🌊🌊
         """.trimIndent()
         assertThat(player1FieldState).isEqualTo(expected)
+    }
+
+    @Test
+    fun `placeShip - should throw exception if ship is placed out of bounds`() {
+        val battleshipsGame = BattleshipsGame()
+
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+            battleshipsGame.placeShip(Player1, Ship(Location(-1, 0), Horizontal, Destroyer))
+        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
+
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+            battleshipsGame.placeShip(Player1, Ship(Location(0, -1), Vertical, Destroyer))
+        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
+
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+            battleshipsGame.placeShip(Player1, Ship(Location(8, 0), Horizontal, Destroyer))
+        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
+
+        assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
+            battleshipsGame.placeShip(Player1, Ship(Location(0, 8), Vertical, Destroyer))
+        }.withMessage("Not all ships are within the bounds of the BattleshipsField")
     }
 }
 

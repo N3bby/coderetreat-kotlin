@@ -22,11 +22,18 @@ enum class Direction(val directionVector: Vector) {
     Vertical(Vector(0, 1))
 }
 
+data class Bounds(val minX: Int, val minY: Int, val maxX: Int, val maxY: Int) {
+    fun isWithinBounds(location: Location): Boolean {
+        return location.x >= minX && location.y >= minY && location.x <= maxX && location.y <= maxY
+    }
+}
+
 data class Location(val x: Int, val y: Int) {
     operator fun plus(vector: Vector): Location {
         return Location(x + vector.x, y + vector.y)
     }
 }
+
 data class Vector(val x: Int, val y: Int) {
     operator fun times(scalar: Int): Vector {
         return Vector(x * scalar, y * scalar)
@@ -34,12 +41,28 @@ data class Vector(val x: Int, val y: Int) {
 }
 
 data class Ship(val location: Location, val direction: Direction, val type: ShipType) {
+
+    fun isWithinBounds(bounds: Bounds): Boolean {
+        return getLocations().all { bounds.isWithinBounds(it) }
+    }
+
     fun getLocations(): List<Location> {
         return (0..type.length).map { index -> location + direction.directionVector * index }
     }
 }
 
 data class BattleshipsField(val ships: List<Ship>) {
+    init {
+        validate()
+    }
+
+    fun validate() {
+        val bounds = Bounds(0, 0, 9, 9)
+        if(!ships.all { it.isWithinBounds(bounds) }) {
+            throw IllegalArgumentException("Not all ships are within the bounds of the BattleshipsField")
+        }
+    }
+
     fun isShipAtLocation(location: Location): Boolean {
         return ships.any { it.getLocations().contains(location) }
     }
