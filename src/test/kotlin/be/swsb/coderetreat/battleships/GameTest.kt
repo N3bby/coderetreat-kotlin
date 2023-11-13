@@ -1,15 +1,16 @@
-package be.swsb.coderetreat
+package be.swsb.coderetreat.battleships
 
-import be.swsb.coderetreat.Direction.Horizontal
-import be.swsb.coderetreat.Direction.Vertical
-import be.swsb.coderetreat.Player.Player1
-import be.swsb.coderetreat.Player.Player2
-import be.swsb.coderetreat.ShipType.*
+import be.swsb.coderetreat.battleships.math.Direction.Horizontal
+import be.swsb.coderetreat.battleships.math.Direction.Vertical
+import be.swsb.coderetreat.battleships.Player.Player1
+import be.swsb.coderetreat.battleships.Player.Player2
+import be.swsb.coderetreat.battleships.ShipType.*
+import be.swsb.coderetreat.battleships.math.Location
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
 
-class BattleshipsGameTest {
+class GameTest {
 
     @Test
     fun `new BattleshipsGame - field should be empty for both players`() {
