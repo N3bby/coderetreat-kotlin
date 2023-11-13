@@ -2,6 +2,7 @@ package be.swsb.coderetreat.battleships
 
 import be.swsb.coderetreat.battleships.Player.Player1
 import be.swsb.coderetreat.battleships.Player.Player2
+import be.swsb.coderetreat.battleships.math.Bounds
 import be.swsb.coderetreat.battleships.math.Location
 import java.lang.IllegalArgumentException
 
@@ -12,9 +13,10 @@ enum class Player {
 
 class BattleshipsGame {
 
+    private val bounds = Bounds(0, 0, 9, 9)
     private val fields = mutableMapOf(
-        Pair(Player1, BattleshipsField(emptyList())),
-        Pair(Player2, BattleshipsField(emptyList()))
+        Pair(Player1, Field(bounds = bounds)),
+        Pair(Player2, Field(bounds = bounds))
     )
 
     private fun getField(player: Player) =
@@ -22,15 +24,14 @@ class BattleshipsGame {
 
     fun placeShip(player: Player, ship: Ship) {
         val field = getField(player)
-        val updatedField = field.copy(ships = field.ships + listOf(ship))
-        fields[player] = updatedField
+        fields[player] = field.addShip(ship)
     }
 
     fun render(player: Player): String {
         val renderOutput = StringBuilder()
         val field = getField(player)
-        for (y in 0..<10) {
-            for (x in 0..<10) {
+        for (y in field.bounds.minY..field.bounds.maxY) {
+            for (x in field.bounds.minX..field.bounds.maxX) {
                 if (field.isShipAtLocation(Location(x, y))) {
                     renderOutput.append("🚢")
                 } else {
