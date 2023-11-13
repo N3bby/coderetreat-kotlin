@@ -4,7 +4,7 @@ import be.swsb.coderetreat.battleships.math.Bounds
 import be.swsb.coderetreat.battleships.math.Location
 import java.lang.IllegalArgumentException
 
-data class BattleshipsField(val ships: List<Ship>) {
+data class Field(private val ships: List<Ship> = emptyList(), private val bounds: Bounds) {
     init {
         validate()
     }
@@ -21,8 +21,11 @@ data class BattleshipsField(val ships: List<Ship>) {
         }
     }
 
+    fun addShip(ship: Ship): Field {
+        return copy(ships = ships + listOf(ship))
+    }
+
     private fun allShipsWithinBounds(): Boolean {
-        val bounds = Bounds(0, 0, 9, 9)
         return ships.all { it.isWithinBounds(bounds) }
     }
 
