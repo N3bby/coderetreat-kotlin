@@ -1,46 +1,57 @@
 package be.swsb.coderetreat.battleships
 
+import be.swsb.coderetreat.battleships.Shot.Hit
+import be.swsb.coderetreat.battleships.Shot.Miss
 import be.swsb.coderetreat.battleships.math.Bounds
 import be.swsb.coderetreat.battleships.math.Location
 import java.lang.IllegalArgumentException
 
-data class Field(private val ships: List<Ship> = emptyList(), val bounds: Bounds) {
-    init {
-        validate()
-    }
+sealed class Shot(val location: Location) {
+    class Hit(location: Location): Shot(location)
+    class Miss(location: Location): Shot(location)
+}
 
-    fun validate() {
-        if(!allShipsWithinBounds()) {
-            throw IllegalArgumentException("Ships must be placed within the bounds of the field")
-        }
-        if(doShipsOverlap()) {
-            throw IllegalArgumentException("Ships may not overlap")
-        }
-        if(!allShipsOfUniqueType()) {
-            throw IllegalArgumentException("You may only place each type of ship once")
+data class Field private constructor(
+    private val fleet: Fleet,
+    private val shots: List<Shot> = emptyList(),
+    val bounds: Bounds,
+) {
+
+    companion object {
+        fun emptyField(bounds: Bounds): Field {
+            return Field(
+                fleet = Fleet(bounds = bounds),
+                bounds = bounds
+            )
         }
     }
 
     fun addShip(ship: Ship): Field {
-        return copy(ships = ships + listOf(ship))
-    }
-
-    private fun allShipsWithinBounds(): Boolean {
-        return ships.all { it.isWithinBounds(bounds) }
-    }
-
-    private fun doShipsOverlap(): Boolean {
-        val amountOfUniqueLocations = ships.flatMap { it.getLocations() }.toSet().size
-        val amountOfLocations = ships.map { it.getLocations().size }.sum()
-        return amountOfUniqueLocations != amountOfLocations
-    }
-
-    private fun allShipsOfUniqueType(): Boolean {
-        val amountOfUniqueTypes = ships.map { it.type }.toSet().size
-        return amountOfUniqueTypes == ships.size
+        return copy(fleet = fleet.addShip(ship))
     }
 
     fun isShipAtLocation(location: Location): Boolean {
-        return ships.any { it.getLocations().contains(location) }
+        return fleet.isShipAtLocation(location)
+    }
+
+    fun isHitAtLocation(location: Location): Boolean {
+        return shots.find { it.location == location } is Hit
+    }
+
+    fun isMissAtLocation(location: Location): Boolean {
+        return shots.find { it.location == location } is Miss
+    }
+
+    fun shoot(location: Location): Field {
+        if(!bounds.isWithinBounds(location)) {
+            throw IllegalArgumentException("Shot is not within bounds of the field")
+        }
+        if(shots.any { it.location == location }) {
+            throw IllegalArgumentException("This location was already shot")
+        }
+
+        val shot = if (isShipAtLocation(location)) Hit(location) else Miss(location)
+
+        return copy(shots = shots + listOf(shot))
     }
 }

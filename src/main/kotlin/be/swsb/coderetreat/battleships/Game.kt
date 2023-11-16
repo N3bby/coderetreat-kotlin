@@ -15,8 +15,8 @@ class BattleshipsGame {
 
     private val bounds = Bounds(0, 0, 9, 9)
     private val fields = mutableMapOf(
-        Pair(Player1, Field(bounds = bounds)),
-        Pair(Player2, Field(bounds = bounds))
+        Pair(Player1, Field.emptyField(bounds)),
+        Pair(Player2, Field.emptyField(bounds))
     )
 
     private fun getField(player: Player) =
@@ -27,15 +27,25 @@ class BattleshipsGame {
         fields[player] = field.addShip(ship)
     }
 
+    fun shoot(targetPlayer: Player, location: Location) {
+        val field = getField(targetPlayer)
+        fields[targetPlayer] = field.shoot(location)
+    }
+
     fun render(player: Player): String {
         val renderOutput = StringBuilder()
         val field = getField(player)
         for (y in field.bounds.minY..field.bounds.maxY) {
             for (x in field.bounds.minX..field.bounds.maxX) {
-                if (field.isShipAtLocation(Location(x, y))) {
+                val location = Location(x, y)
+                if (field.isHitAtLocation(location)) {
+                    renderOutput.append("🔥")
+                } else if (field.isMissAtLocation(location)) {
+                    renderOutput.append("💨")
+                } else if (field.isShipAtLocation(location)) {
                     renderOutput.append("🚢")
                 } else {
-                    renderOutput.append("🌊")
+                    renderOutput.append("🟦")
                 }
             }
             renderOutput.append("\n")

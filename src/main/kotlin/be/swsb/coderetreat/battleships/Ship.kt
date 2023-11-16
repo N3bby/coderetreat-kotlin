@@ -19,6 +19,6 @@ data class Ship(val location: Location, val direction: Direction, val type: Ship
     }
 
     fun getLocations(): List<Location> {
-        return (0..type.length).map { index -> location + direction.directionVector * index }
+        return (0..<type.length).map { index -> location + direction.directionVector * index }
     }
 }
