@@ -14,7 +14,7 @@ data class Fleet(private val ships: List<Ship> = emptyList(), val bounds: Bounds
         return copy(ships = ships + listOf(ship))
     }
 
-    fun validate() {
+    private fun validate() {
         if(!allShipsWithinBounds()) {
             throw IllegalArgumentException("Ships must be placed within the bounds of the field")
         }

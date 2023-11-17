@@ -16,8 +16,8 @@ import be.swsb.coderetreat.battleships.math.Location
  * 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
  * 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
  */
-fun createDefaultGame(): BattleshipsGame {
-    val game = BattleshipsGame()
+fun createDefaultGame(): Game {
+    val game = Game()
 
     game.placeShip(Player.Player1, Ship(Location(1, 1), Direction.Horizontal, ShipType.Destroyer))
     game.placeShip(Player.Player1, Ship(Location(8, 1), Direction.Vertical, ShipType.Carrier))

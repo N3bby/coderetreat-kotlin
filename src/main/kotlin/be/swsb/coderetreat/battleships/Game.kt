@@ -11,7 +11,7 @@ enum class Player {
     Player2
 }
 
-class BattleshipsGame {
+class Game {
 
     private val bounds = Bounds(0, 0, 9, 9)
     private val fields = mutableMapOf(

@@ -15,7 +15,7 @@ class GameTest {
 
     @Test
     fun `new BattleshipsGame - field should be empty for both players`() {
-        val battleshipsGame = BattleshipsGame()
+        val game = Game()
 
         val expected = """
             🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
@@ -29,16 +29,16 @@ class GameTest {
             🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
             🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
         """.trimIndent()
-        assertThat(battleshipsGame.render(Player1)).isEqualTo(expected)
-        assertThat(battleshipsGame.render(Player2)).isEqualTo(expected)
+        assertThat(game.render(Player1)).isEqualTo(expected)
+        assertThat(game.render(Player2)).isEqualTo(expected)
     }
 
     @Nested
     inner class PlaceShipTest {
         @Test
         fun `placeShip - player should be able to place a ship at a location horizontally`() {
-            val battleshipsGame = BattleshipsGame()
-            battleshipsGame.placeShip(Player1, Ship(Location(1, 2), Horizontal, Destroyer))
+            val game = Game()
+            game.placeShip(Player1, Ship(Location(1, 2), Horizontal, Destroyer))
 
             val expected = """
                 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
@@ -52,13 +52,13 @@ class GameTest {
                 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
                 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
             """.trimIndent()
-            assertThat(battleshipsGame.render(Player1)).isEqualTo(expected)
+            assertThat(game.render(Player1)).isEqualTo(expected)
         }
 
         @Test
         fun `placeShip - player should be able to place a ship at a location vertically`() {
-            val battleshipsGame = BattleshipsGame()
-            battleshipsGame.placeShip(Player1, Ship(Location(1, 2), Vertical, Destroyer))
+            val game = Game()
+            game.placeShip(Player1, Ship(Location(1, 2), Vertical, Destroyer))
 
             val expected = """
                 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
@@ -72,47 +72,47 @@ class GameTest {
                 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
                 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
             """.trimIndent()
-            assertThat(battleshipsGame.render(Player1)).isEqualTo(expected)
+            assertThat(game.render(Player1)).isEqualTo(expected)
         }
 
         @Test
         fun `placeShip - should throw exception if ship is placed out of bounds`() {
-            val battleshipsGame = BattleshipsGame()
+            val game = Game()
 
             assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
-                battleshipsGame.placeShip(Player1, Ship(Location(-1, 0), Horizontal, Destroyer))
+                game.placeShip(Player1, Ship(Location(-1, 0), Horizontal, Destroyer))
             }.withMessage("Ships must be placed within the bounds of the field")
 
             assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
-                battleshipsGame.placeShip(Player1, Ship(Location(0, -1), Vertical, Destroyer))
+                game.placeShip(Player1, Ship(Location(0, -1), Vertical, Destroyer))
             }.withMessage("Ships must be placed within the bounds of the field")
 
             assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
-                battleshipsGame.placeShip(Player1, Ship(Location(8, 0), Horizontal, Destroyer))
+                game.placeShip(Player1, Ship(Location(8, 0), Horizontal, Destroyer))
             }.withMessage("Ships must be placed within the bounds of the field")
 
             assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
-                battleshipsGame.placeShip(Player1, Ship(Location(0, 8), Vertical, Destroyer))
+                game.placeShip(Player1, Ship(Location(0, 8), Vertical, Destroyer))
             }.withMessage("Ships must be placed within the bounds of the field")
         }
 
         @Test
         fun `placeShip - should throw exception if ships overlap`() {
-            val battleshipsGame = BattleshipsGame()
-            battleshipsGame.placeShip(Player1, Ship(Location(0, 2), Horizontal, Carrier))
+            val game = Game()
+            game.placeShip(Player1, Ship(Location(0, 2), Horizontal, Carrier))
 
             assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
-                battleshipsGame.placeShip(Player1, Ship(Location(2, 0), Vertical, Battleship))
+                game.placeShip(Player1, Ship(Location(2, 0), Vertical, Battleship))
             }.withMessage("Ships may not overlap")
         }
 
         @Test
         fun `placeShip - should throw exception if player places the same type of ship multiple times`() {
-            val battleshipsGame = BattleshipsGame()
-            battleshipsGame.placeShip(Player1, Ship(Location(0, 0), Horizontal, Battleship))
+            val game = Game()
+            game.placeShip(Player1, Ship(Location(0, 0), Horizontal, Battleship))
 
             assertThatExceptionOfType(IllegalArgumentException::class.java).isThrownBy {
-                battleshipsGame.placeShip(Player1, Ship(Location(0, 1), Horizontal, Battleship))
+                game.placeShip(Player1, Ship(Location(0, 1), Horizontal, Battleship))
             }.withMessage("You may only place each type of ship once")
         }
     }
