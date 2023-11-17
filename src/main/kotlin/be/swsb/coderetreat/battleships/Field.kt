@@ -16,7 +16,7 @@ data class Field private constructor(
     val bounds: Bounds,
 ) {
 
-    val hits = shots.filterIsInstance<Hit>()
+    private val hits get() = shots.filterIsInstance<Hit>()
 
     companion object {
         fun emptyField(bounds: Bounds): Field {
