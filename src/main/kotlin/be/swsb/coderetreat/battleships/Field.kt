@@ -4,7 +4,6 @@ import be.swsb.coderetreat.battleships.Shot.Hit
 import be.swsb.coderetreat.battleships.Shot.Miss
 import be.swsb.coderetreat.battleships.math.Bounds
 import be.swsb.coderetreat.battleships.math.Location
-import java.lang.IllegalArgumentException
 
 sealed class Shot(val location: Location) {
     class Hit(location: Location): Shot(location)
@@ -16,6 +15,8 @@ data class Field private constructor(
     private val shots: List<Shot> = emptyList(),
     val bounds: Bounds,
 ) {
+
+    val hits = shots.filterIsInstance<Hit>()
 
     companion object {
         fun emptyField(bounds: Bounds): Field {
@@ -30,6 +31,14 @@ data class Field private constructor(
         return copy(fleet = fleet.addShip(ship))
     }
 
+    fun areAllShipsPlaced(): Boolean {
+        return fleet.isFleetComplete()
+    }
+
+    fun areAllShipsSunk(): Boolean {
+        return fleet.ships.flatMap { it.getLocations() }.size == hits.size
+    }
+
     fun isShipAtLocation(location: Location): Boolean {
         return fleet.isShipAtLocation(location)
     }
@@ -42,7 +51,7 @@ data class Field private constructor(
         return shots.find { it.location == location } is Miss
     }
 
-    fun shoot(location: Location): Field {
+    fun shoot(location: Location): Pair<Field, Shot> {
         if(!bounds.isWithinBounds(location)) {
             throw IllegalArgumentException("Shot is not within bounds of the field")
         }
@@ -52,6 +61,9 @@ data class Field private constructor(
 
         val shot = if (isShipAtLocation(location)) Hit(location) else Miss(location)
 
-        return copy(shots = shots + listOf(shot))
+        return Pair(
+            copy(shots = shots + listOf(shot)),
+            shot
+        )
     }
 }

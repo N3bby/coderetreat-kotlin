@@ -4,7 +4,7 @@ import be.swsb.coderetreat.battleships.math.Bounds
 import be.swsb.coderetreat.battleships.math.Location
 import java.lang.IllegalArgumentException
 
-data class Fleet(private val ships: List<Ship> = emptyList(), val bounds: Bounds) {
+data class Fleet(val ships: List<Ship> = emptyList(), val bounds: Bounds) {
 
     init {
         validate()
@@ -43,6 +43,10 @@ data class Fleet(private val ships: List<Ship> = emptyList(), val bounds: Bounds
 
     fun isShipAtLocation(location: Location): Boolean {
         return ships.any { it.getLocations().contains(location) }
+    }
+
+    fun isFleetComplete(): Boolean {
+        return ships.size == ShipType.entries.size
     }
 
 }

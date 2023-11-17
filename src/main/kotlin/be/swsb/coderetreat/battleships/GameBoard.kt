@@ -1,35 +1,48 @@
 package be.swsb.coderetreat.battleships
 
-import be.swsb.coderetreat.battleships.Player.Player1
-import be.swsb.coderetreat.battleships.Player.Player2
 import be.swsb.coderetreat.battleships.math.Bounds
 import be.swsb.coderetreat.battleships.math.Location
-import java.lang.IllegalArgumentException
 
 enum class Player {
     Player1,
     Player2
 }
 
-class Game {
+data class GameBoard private constructor(private val bounds: Bounds, private val fields: Map<Player, Field>) {
 
-    private val bounds = Bounds(0, 0, 9, 9)
-    private val fields = mutableMapOf(
-        Pair(Player1, Field.emptyField(bounds)),
-        Pair(Player2, Field.emptyField(bounds))
-    )
+    companion object {
+        fun newGameBoard(bounds: Bounds = Bounds(0, 0, 9, 9)): GameBoard {
+            return GameBoard(
+                bounds = bounds,
+                fields = Player.entries.associateWith { Field.emptyField(bounds) },
+            )
+        }
+    }
 
     private fun getField(player: Player) =
         fields[player] ?: throw IllegalArgumentException("No field exists for player: $player")
 
-    fun placeShip(player: Player, ship: Ship) {
+    fun placeShip(player: Player, ship: Ship): GameBoard {
         val field = getField(player)
-        fields[player] = field.addShip(ship)
+        val updatedField = field.addShip(ship)
+        return copy(fields = fields + mapOf(player to updatedField))
     }
 
-    fun shoot(targetPlayer: Player, location: Location) {
+    fun areAllShipsPlaced(): Boolean {
+        return fields.values.all { it.areAllShipsPlaced() }
+    }
+
+    fun shoot(targetPlayer: Player, location: Location): Pair<GameBoard, Shot> {
         val field = getField(targetPlayer)
-        fields[targetPlayer] = field.shoot(location)
+        val (updatedField, shot) = field.shoot(location)
+        return Pair(
+            copy(fields = fields + mapOf(targetPlayer to updatedField)),
+            shot
+        )
+    }
+
+    fun isGameFinished(): Boolean {
+        return fields.values.any { it.areAllShipsSunk() }
     }
 
     fun render(player: Player): String {
